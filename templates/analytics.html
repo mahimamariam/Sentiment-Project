@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="background">
+
+        <div class="blob blob1"></div>
+        <div class="blob blob2"></div>
+        <div class="blob blob3"></div>
+
+        <div class="container historyContainer">
+
+            <div class="card">
+
+                <div class="navBar">
+                    <a href="/" class="navLink">
+                        <i class="fa-solid fa-house"></i> Home
+                    </a>
+
+                    <a href="/history" class="navLink">
+                        <i class="fa-solid fa-clock-rotate-left"></i> History
+                    </a>
+
+                    <a href="/analytics" class="navLink active">
+                        <i class="fa-solid fa-chart-pie"></i> Analytics
+                    </a>
+
+                    <a href="/export-csv" class="navLink">
+                        <i class="fa-solid fa-file-csv"></i> Export CSV
+                    </a>
+                </div>
+
+                <h1>Analytics Dashboard</h1>
+
+                <p class="subtitle">
+                    Visualize sentiment trends and feedback distribution using interactive charts.
+                </p>
+
+                <div class="dashboardStats">
+
+                    <div class="dashBox">
+                        <i class="fa-solid fa-database"></i>
+                        <h3>{{ stats.total }}</h3>
+                        <p>Total Analyses</p>
+                    </div>
+
+                    <div class="dashBox positiveText">
+                        <i class="fa-solid fa-face-smile"></i>
+                        <h3>{{ stats.positive_percent }}%</h3>
+                        <p>Positive</p>
+                    </div>
+
+                    <div class="dashBox negativeText">
+                        <i class="fa-solid fa-face-frown"></i>
+                        <h3>{{ stats.negative_percent }}%</h3>
+                        <p>Negative</p>
+                    </div>
+
+                    <div class="dashBox neutralText">
+                        <i class="fa-solid fa-face-meh"></i>
+                        <h3>{{ stats.neutral_percent }}%</h3>
+                        <p>Neutral</p>
+                    </div>
+
+                </div>
+
+                <div class="chartGrid">
+
+                    <div class="chartCard">
+                        <h2>
+                            <i class="fa-solid fa-chart-pie"></i>
+                            Sentiment Distribution
+                        </h2>
+                        <canvas id="pieChart"></canvas>
+                    </div>
+
+                    <div class="chartCard">
+                        <h2>
+                            <i class="fa-solid fa-chart-column"></i>
+                            Sentiment Count
+                        </h2>
+                        <canvas id="barChart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const positiveCount = {{ stats.positive }};
+        const negativeCount = {{ stats.negative }};
+        const neutralCount = {{ stats.neutral }};
+
+        const pieCtx = document.getElementById("pieChart");
+        const barCtx = document.getElementById("barChart");
+
+        new Chart(pieCtx, {
+            type: "pie",
+            data: {
+                labels: ["Positive", "Negative", "Neutral"],
+                datasets: [{
+                    data: [positiveCount, negativeCount, neutralCount],
+                    backgroundColor: ["#16a34a", "#dc2626", "#eab308"],
+                    borderWidth: 0
+                }]
+            }
+        });
+
+        new Chart(barCtx, {
+            type: "bar",
+            data: {
+                labels: ["Positive", "Negative", "Neutral"],
+                datasets: [{
+                    label: "Sentiment Count",
+                    data: [positiveCount, negativeCount, neutralCount],
+                    backgroundColor: ["#16a34a", "#dc2626", "#eab308"],
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Feedback Analytics</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<div class="background">
+
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <div class="container">
+
+        <div class="card">
+
+            <div class="navBar">
+                <a href="/" class="navLink active">
+                    <i class="fa-solid fa-house"></i> Home
+                </a>
+
+                <a href="/history" class="navLink">
+                    <i class="fa-solid fa-clock-rotate-left"></i> History
+                </a>
+
+                <a href="/analytics" class="navLink">
+                    <i class="fa-solid fa-chart-pie"></i> Analytics
+                </a>
+
+                <a href="/export-csv" class="navLink">
+                    <i class="fa-solid fa-file-csv"></i> Export CSV
+                </a>
+            </div>
+
+            <div class="logo">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+
+            <h1>AI Feedback Analytics</h1>
+
+            <p class="subtitle">
+                Analyze feedback, detect sentiment, store history, and view analytics using Machine Learning.
+            </p>
+
+            {% if stats %}
+            <div class="dashboardStats">
+
+                <div class="dashBox">
+                    <i class="fa-solid fa-database"></i>
+                    <h3>{{ stats.total }}</h3>
+                    <p>Total Analyses</p>
+                </div>
+
+                <div class="dashBox positiveText">
+                    <i class="fa-solid fa-face-smile"></i>
+                    <h3>{{ stats.positive_percent }}%</h3>
+                    <p>Positive</p>
+                </div>
+
+                <div class="dashBox negativeText">
+                    <i class="fa-solid fa-face-frown"></i>
+                    <h3>{{ stats.negative_percent }}%</h3>
+                    <p>Negative</p>
+                </div>
+
+                <div class="dashBox neutralText">
+                    <i class="fa-solid fa-face-meh"></i>
+                    <h3>{{ stats.neutral_percent }}%</h3>
+                    <p>Neutral</p>
+                </div>
+
+            </div>
+            {% endif %}
+
+            <form action="/predict" method="POST" id="sentimentForm">
+
+                <textarea
+                    name="text"
+                    id="text"
+                    placeholder="Type customer feedback, review, or comment here..."
+                    required>{{ text if text else "" }}</textarea>
+
+                <div class="counter">
+                    <span id="charCount">0 Characters</span>
+                    <span id="wordCount">0 Words</span>
+                </div>
+
+                <div class="buttonGroup">
+                    <button type="submit" class="analyzeBtn">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        Analyze Sentiment
+                    </button>
+
+                    <button type="button" class="clearBtn" onclick="clearText()">
+                        <i class="fa-solid fa-trash"></i>
+                        Clear
+                    </button>
+                </div>
+
+            </form>
+
+            <div class="examples">
+                <p>Try:</p>
+
+                <button onclick="fillExample('I love this product, it is very helpful!')" type="button">
+                    😊 Positive
+                </button>
+
+                <button onclick="fillExample('The service was very bad and disappointing.')" type="button">
+                    😞 Negative
+                </button>
+
+                <button onclick="fillExample('The meeting starts at 10 AM.')" type="button">
+                    😐 Neutral
+                </button>
+            </div>
+
+            {% if prediction %}
+
+            <div class="resultCard">
+
+                <h2>
+                    <i class="fa-solid fa-chart-column"></i>
+                    Analysis Result
+                </h2>
+
+                <div class="inputText">
+                    {{ text }}
+                </div>
+
+                {% if prediction == "Positive" %}
+                    <div class="badge positive">😊 Positive</div>
+                {% elif prediction == "Negative" %}
+                    <div class="badge negative">😞 Negative</div>
+                {% else %}
+                    <div class="badge neutral">😐 Neutral</div>
+                {% endif %}
+
+                <div class="progressTitle">
+                    <span>Confidence Score</span>
+                    <span>{{ confidence }}%</span>
+                </div>
+
+                <div class="progressBar">
+                    <div class="progressFill" style="width: {{ confidence }}%"></div>
+                </div>
+
+                <div class="stats">
+
+                    <div class="statBox">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <h3>{{ confidence }}%</h3>
+                        <p>Confidence</p>
+                    </div>
+
+                    <div class="statBox">
+                        <i class="fa-solid fa-font"></i>
+                        <h3>{{ total_words }}</h3>
+                        <p>Words</p>
+                    </div>
+
+                    <div class="statBox">
+                        <i class="fa-solid fa-keyboard"></i>
+                        <h3>{{ characters }}</h3>
+                        <p>Characters</p>
+                    </div>
+
+                </div>
+
+                <div class="analysis">
+                    <h3>
+                        <i class="fa-solid fa-lightbulb"></i>
+                        AI Explanation
+                    </h3>
+
+                    <p>{{ analysis }}</p>
+                </div>
+
+                <div class="resultButtons">
+                    <button type="button" class="copyBtn" onclick="copyResult()">
+                        <i class="fa-solid fa-copy"></i>
+                        Copy Result
+                    </button>
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
